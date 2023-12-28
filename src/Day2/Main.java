@@ -18,49 +18,62 @@ public class Main {
             int maxBlueCubes = 14;
 
             String inputLine;
-            ArrayList<Integer> calibrationValues = new ArrayList<>();
+            ArrayList<Integer> validGameIds = new ArrayList<>();
 
             while ((inputLine = reader.readLine()) != null) {
-                ArrayList<Integer> blueDigits = new ArrayList<>();
-                ArrayList<Integer> redDigits = new ArrayList<>();
-                ArrayList<Integer> greenDigits = new ArrayList<>();
 
-                Pattern digitPattern = Pattern.compile("(\\d+ blue|\\d+ red|\\d+ green)");
-                Matcher patternMatcher = digitPattern.matcher(inputLine);
+                String[] gameSets = inputLine.split(";");
+                boolean goodSet = true;
 
-                while (patternMatcher.find()) {
-                    String foundMatch = patternMatcher.group();
-                    String foundNumber;
-                    if (foundMatch.contains("blue")) {
-                        foundNumber = foundMatch.replaceAll("[^0-9]", "");
-                        blueDigits.add(Integer.parseInt(foundNumber));
-                    } else if (foundMatch.contains("red")) {
-                        foundNumber = foundMatch.replaceAll("[^0-9]", "");
-                        redDigits.add(Integer.parseInt(foundNumber));
-                    } else if (foundMatch.contains("green")) {
-                        foundNumber = foundMatch.replaceAll("[^0-9]", "");
-                        greenDigits.add(Integer.parseInt(foundNumber));
+                for (String set : gameSets) {
+                    Pattern numberPattern = Pattern.compile("(\\d+ blue|\\d+ red|\\d+ green)");
+                    Matcher patternMatcher = numberPattern.matcher(set);
+
+                    int blueCubes = 0;
+                    int redCubes = 0;
+                    int greenCubes = 0;
+
+                    while (patternMatcher.find()) {
+                        String foundMatch = patternMatcher.group();
+
+                        String foundNumberStr = removeAllExceptDigits(foundMatch);
+                        int foundNumber = Integer.parseInt(foundNumberStr);
+
+                        if (foundMatch.contains("blue")) {
+                            blueCubes = foundNumber;
+                        } else if (foundMatch.contains("red")) {
+                            redCubes = foundNumber;
+                        } else if (foundMatch.contains("green")) {
+                            greenCubes = foundNumber;
+                        }
+                    }
+
+                    if (blueCubes > maxBlueCubes || redCubes > maxRedCubes || greenCubes > maxGreenCubes) {
+                        goodSet = false;
+                        break;
                     }
                 }
-                int blueSum = getSum(blueDigits);
-                int redSum = getSum(redDigits);
-                int greenSum = getSum(greenDigits);
 
-                if (blueSum <= maxBlueCubes && redSum <= maxRedCubes && greenSum <= maxGreenCubes) {
-                    calibrationValues.add(Integer.parseInt(inputLine.substring(5, 8).replaceAll("[^0-9]", "")));
+                if (goodSet == true) {
+                    String gameId = inputLine.substring(5, 8);
+                    int id = Integer.parseInt(removeAllExceptDigits(gameId));
+                    validGameIds.add(id);
                 }
-
             }
+
             fileReader.close();
-            System.out.println(calibrationValues);
-            System.out.println(getSum(calibrationValues));
-            // 4, 21, 27, 37, 53, 74, 75, 78
+            System.out.println(validGameIds);
+            System.out.println(getSum(validGameIds));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static String removeAllExceptDigits(String input) {
+        String result = input.replaceAll("[^0-9]", "");
+        return result;
+    }
     private static int getSum(ArrayList<Integer> numbers) {
         int sum = 0;
         for (int number : numbers) {
