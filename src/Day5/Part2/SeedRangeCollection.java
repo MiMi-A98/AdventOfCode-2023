@@ -25,16 +25,4 @@ public class SeedRangeCollection {
         return "Seed ranges: " + seedRanges;
     }
 
-    public ArrayList<Long> getAllSeeds() {
-        Long seed = null;
-        ArrayList<Long> seeds = new ArrayList<>();
-        for (SeedRange seedRange : seedRanges) {
-            seed = seedRange.seedRangeStart;
-            while (seed < (seedRange.seedRangeStart + seedRange.seedRangeLength)) {
-                seeds.add(seed);
-                seed += 1;
-            }
-        }
-        return seeds;
-    }
 }
