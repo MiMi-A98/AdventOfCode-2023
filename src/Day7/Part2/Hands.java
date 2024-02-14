@@ -1,6 +1,9 @@
-package Day7.Part1;
+package Day7.Part2;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Hands {
 
@@ -36,45 +39,6 @@ public class Hands {
                 "{" + "High Card" + highCard + "}";
     }
 
-    public void sortHandsOnType() {
-
-        for (Hand hand : handsList) {
-            Map<Character, Integer> charactersCount = new HashMap<>();
-
-            for (char character : hand.gameHand.toCharArray()) {
-                if (charactersCount.containsKey(character)) {
-                    charactersCount.put(character, charactersCount.get(character) + 1);
-                } else {
-                    charactersCount.putIfAbsent(character, 1);
-                }
-            }
-
-            if (charactersCount.size() == 5) {
-                highCard.add(hand);
-
-            } else if (charactersCount.size() == 4) {
-                onePair.add(hand);
-
-            } else if (charactersCount.size() == 3) {
-                if (charactersCount.containsValue(2)) {
-                    twoPair.add(hand);
-                } else {
-                    threeOfAKind.add(hand);
-                }
-
-            } else if (charactersCount.size() == 2) {
-                if (charactersCount.containsValue(2)) {
-                    fullHouse.add(hand);
-                } else {
-                    fourOfAKind.add(hand);
-                }
-
-            } else if (charactersCount.size() == 1) {
-                fiveOfAKind.add(hand);
-            }
-        }
-    }
-
     private int getCardValue(char c) {
 
         if (Character.isDigit(c)) {
@@ -88,12 +52,104 @@ public class Hands {
                 case 'Q':
                     return 12;
                 case 'J':
-                    return 11;
+                    return 1;
                 case 'T':
                     return 10;
             }
         }
         return 0;
+    }
+
+    private void determineHandTypeWithWildCard(Hand hand, Map<Character, Integer> charactersCount, int numberOfWildCard) {
+
+        if (numberOfWildCard == 4 || numberOfWildCard == 5) {
+            fiveOfAKind.add(hand);
+        } else if (numberOfWildCard == 3) {
+            if (charactersCount.size() == 2) {
+                fiveOfAKind.add(hand);
+            } else {
+                fourOfAKind.add(hand);
+            }
+        } else if (numberOfWildCard == 2) {
+            if (charactersCount.size() == 2) {
+                fiveOfAKind.add(hand);
+            } else if (charactersCount.size() == 3) {
+                if (charactersCount.containsValue(2)) {
+                    fourOfAKind.add(hand);
+                } else {
+                    threeOfAKind.add(hand);
+                }
+            } else {
+               threeOfAKind.add(hand);
+            }
+        } else if (numberOfWildCard == 1) {
+            if (charactersCount.size() == 2) {
+                fiveOfAKind.add(hand);
+            } else if (charactersCount.size() == 3) {
+                if (charactersCount.containsValue(2)) {
+                    fullHouse.add(hand);
+                } else {
+                    fourOfAKind.add(hand);
+                }
+            } else if (charactersCount.size() == 4) {
+                threeOfAKind.add(hand);
+            } else {
+                onePair.add(hand);
+            }
+        }
+    }
+
+    private void determineHandTypeWithoutWildCard(Hand hand, Map<Character, Integer> charactersCount) {
+        if (charactersCount.size() == 5) {
+            highCard.add(hand);
+
+        } else if (charactersCount.size() == 4) {
+            onePair.add(hand);
+
+        } else if (charactersCount.size() == 3) {
+            if (charactersCount.containsValue(2)) {
+                twoPair.add(hand);
+            } else {
+                threeOfAKind.add(hand);
+            }
+
+        } else if (charactersCount.size() == 2) {
+            if (charactersCount.containsValue(2)) {
+                fullHouse.add(hand);
+            } else {
+                fourOfAKind.add(hand);
+            }
+
+        } else if (charactersCount.size() == 1) {
+            fiveOfAKind.add(hand);
+        }
+    }
+
+    private static Map<Character, Integer> getCharacterCountMap(Hand hand) {
+        Map<Character, Integer> charactersCount = new HashMap<>();
+
+        for (char character : hand.gameHand.toCharArray()) {
+            if (charactersCount.containsKey(character)) {
+                charactersCount.put(character, charactersCount.get(character) + 1);
+            } else {
+                charactersCount.putIfAbsent(character, 1);
+            }
+        }
+        return charactersCount;
+    }
+
+    public void sortHandsOnType() {
+
+        for (Hand hand : handsList) {
+            Map<Character, Integer> charactersCount = getCharacterCountMap(hand);
+
+            if (charactersCount.containsKey('J')) {
+                int numberOfWildCard = charactersCount.get('J');
+                determineHandTypeWithWildCard(hand, charactersCount, numberOfWildCard);
+            } else {
+                determineHandTypeWithoutWildCard(hand, charactersCount);
+            }
+        }
     }
 
     private List<Hand> orderList(List<Hand> arrayList) {
@@ -148,6 +204,8 @@ public class Hands {
         finalOrderedList.addAll(fullHouse);
         finalOrderedList.addAll(fourOfAKind);
         finalOrderedList.addAll(fiveOfAKind);
+
+        System.out.println(finalOrderedList.size());
 
         return finalOrderedList;
     }

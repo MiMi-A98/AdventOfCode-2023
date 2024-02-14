@@ -1,8 +1,7 @@
-package Day7.Part1;
+package Day7.Part2;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 
 public class Main {
     static Hands handsList = new Hands();
