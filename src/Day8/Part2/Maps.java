@@ -1,5 +1,6 @@
 package Day8.Part2;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ public class Maps {
     }
 
     Map<String, Directions> nodesMap;
+    List<String> startingNodeList = new ArrayList<>();
 
     public Maps() {
         nodesMap = new HashMap<>();
@@ -26,29 +28,41 @@ public class Maps {
     }
 
 
-    public int getStepsNumbToLastNode(List<Character> arrayList) {
-        int stepsCount = 0;
-        String currentNode = "AAA";
+    public void selectStartingNodesFromMap() {
+        startingNodeList = nodesMap.keySet().stream().filter(k -> k.endsWith("A")).toList();
+    }
 
-        while (!currentNode.equals("ZZZ")) {
-            for (Character character : arrayList) {
-                while (!currentNode.equals("ZZZ")) {
-                    int nextStep = Main.getDirectionValue(character);
-                    Directions directions = nodesMap.get(currentNode);
-                    if (nextStep == 0) {
-                        currentNode = directions.leftDirection;
-                        stepsCount += 1;
-                        break;
-                    } else if (nextStep == 1) {
-                        currentNode = directions.rightDirection;
-                        stepsCount += 1;
-                        break;
+
+    public List<Integer> getStepsListToLastNodes(List<Character> characterList) {
+        List<Integer> stepsCountList = new ArrayList<>();
+        selectStartingNodesFromMap();
+
+        for (int i = 0; i < startingNodeList.size(); i++) {
+            int stepsCount = 0;
+            String currentNode = startingNodeList.get(i);
+            while (!currentNode.contains("Z")) {
+                for (Character character : characterList) {
+                    while (!currentNode.contains("Z")) {
+
+                        int nextStep = Main.getDirectionValue(character);
+                        Directions directions = nodesMap.get(currentNode);
+                        if (nextStep == 0) {
+                            currentNode = directions.leftDirection;
+                            stepsCount += 1;
+                            break;
+                        } else if (nextStep == 1) {
+                            currentNode = directions.rightDirection;
+                            stepsCount += 1;
+                            break;
+                        }
+
                     }
                 }
             }
+            stepsCountList.add(stepsCount);
         }
 
-        return stepsCount;
+        return stepsCountList;
     }
 
 }

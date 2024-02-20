@@ -39,14 +39,37 @@ public class Main {
                 }
             }
 
-           int stepsCount = nodeMap.getStepsNumbToLastNode(instructions);
-            System.out.println(stepsCount);
+            long result = getLCM();
+            System.out.println(result);
+
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
+
+    private static long getLCM() {
+        List<Integer> stepsCountsUntilEndNodes = nodeMap.getStepsListToLastNodes(instructions);
+        long lcm = stepsCountsUntilEndNodes.get(0).longValue();
+        for (int i = 1; i < stepsCountsUntilEndNodes.size(); i++) {
+            lcm = calcLowestCommonMultiple(lcm, stepsCountsUntilEndNodes.get(i).longValue());
+        }
+
+        return lcm;
+    }
+
+
+    public static long calcLowestCommonMultiple(long x, long y) {
+        long max = Math.max(x, y);
+        long min = Math.min(x, y);
+        long lowestCommonMultiple = max;
+        while (lowestCommonMultiple % min != 0) {
+            lowestCommonMultiple += max;
+        }
+        return lowestCommonMultiple;
+    }
+
     public static int getDirectionValue(char character) {
 
         switch (character) {

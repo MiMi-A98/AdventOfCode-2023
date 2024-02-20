@@ -33,6 +33,7 @@ public class Maps {
         while (!currentNode.equals("ZZZ")) {
             for (Character character : arrayList) {
                 while (!currentNode.equals("ZZZ")) {
+
                     int nextStep = Main.getDirectionValue(character);
                     Directions directions = nodesMap.get(currentNode);
                     if (nextStep == 0) {
@@ -44,6 +45,7 @@ public class Maps {
                         stepsCount += 1;
                         break;
                     }
+
                 }
             }
         }
