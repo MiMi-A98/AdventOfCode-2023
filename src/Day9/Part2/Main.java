@@ -38,25 +38,26 @@ public class Main {
     private static List<Integer> getExtrapolatedValues() {
         List<Integer> extrapolatedValues = new ArrayList<>();
 
-        for (List list: oasisReport) {
+        for (List list : oasisReport) {
             Collections.reverse(list);
             int nextValue = getNextNumber(list);
             extrapolatedValues.add(nextValue);
         }
         return extrapolatedValues;
     }
+
     private static int getNextNumber(List<Integer> arrayList) {
         List<Integer> differences = getDifferences(arrayList);
         if (differences.stream().anyMatch(x -> x != 0)) {
-            return arrayList.get(arrayList.size()-1) + getNextNumber(differences);
+            return arrayList.get(arrayList.size() - 1) + getNextNumber(differences);
         } else {
-            return arrayList.get(arrayList.size()-1);
+            return arrayList.get(arrayList.size() - 1);
         }
     }
 
     private static List<Integer> getDifferences(List<Integer> arrayList) {
         List<Integer> differences = new ArrayList<>();
-        for (int i = 0; i < arrayList.size()-1; i++) {
+        for (int i = 0; i < arrayList.size() - 1; i++) {
 
             int difference = arrayList.get(i + 1) - arrayList.get(i);
             differences.add(difference);
