@@ -19,65 +19,28 @@ public class Main {
              BufferedReader reader = new BufferedReader(fileReader)) {
 
             String inputLine;
-            int i = 0;
             while ((inputLine = reader.readLine()) != null) {
                 input.add(inputLine);
-                i++;
             }
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
+        List<Integer> rowsToExpand = getRowsToExpand();
+        List<Integer> columnsToExpand = getColumnsToExpand();
+        determineGalaxyCoordinates();
 
-        List<Long> rowsToExpand = getRowsToExpand();
-        List<Long> columnsToExpand = getColumnsToExpand();
-        getGalaxyCoordinates();
-        long distancePart1 = getDistance(rowsToExpand, columnsToExpand, 2);
-        long distancePart2 = getDistance(rowsToExpand, columnsToExpand, 1000000);
+        long distancePart1 = calculateDistance(rowsToExpand, columnsToExpand, 2);
+        long distancePart2 = calculateDistance(rowsToExpand, columnsToExpand, 1000000);
 
         System.out.println(distancePart1);
         System.out.println(distancePart2);
     }
-
-    private static long getDistance(List<Long> rowsToExpand, List<Long> columnsToExpand, long timesToExpand) {
-        long distance = 0;
-        for (int element = 1; element < galaxyCoordinates.size(); ) {
-            for (int secondElement = element + 1; secondElement <= galaxyCoordinates.size(); secondElement++) {
-                Coordinates firstCoordinates = galaxyCoordinates.get(element);
-                Coordinates secondCoordinates = galaxyCoordinates.get(secondElement);
-                long rowSum = firstCoordinates.row() - secondCoordinates.row();
-                long columnSum = firstCoordinates.column() - secondCoordinates.column();
-                long sum = Math.abs(rowSum) + Math.abs(columnSum)
-                        + getNrToAdd(firstCoordinates.row(), secondCoordinates.row(), rowsToExpand, timesToExpand)
-                        + getNrToAdd(firstCoordinates.column(), secondCoordinates.column(), columnsToExpand, timesToExpand);
-                distance += sum;
-            }
-            element++;
-
-        }
-        return distance;
-    }
-
-    private static void getGalaxyCoordinates() {
-        char[][] galaxies = getGalaxyArray();
-        int elemCounter = 1;
-        for (int row = 0; row < galaxies.length; row++) {
-            for (int column = 0; column < galaxies[row].length; column++) {
-                char currentCharacter = galaxies[row][column];
-                if (currentCharacter == '#') {
-                    galaxyCoordinates.put(elemCounter, new Coordinates(row, column));
-                    elemCounter++;
-                }
-            }
-        }
-    }
-
-    private static List<Long> getRowsToExpand() {
-        List<Long> rowsToExpand = new ArrayList<>();
-        for (long row = 0; row < input.size(); row++) {
-            int elem = Math.toIntExact(row);
-            String inputRow = input.get(elem);
+    private static List<Integer> getRowsToExpand() {
+        List<Integer> rowsToExpand = new ArrayList<>();
+        for (int row = 0; row < input.size(); row++) {
+            String inputRow = input.get(row);
             if (inputRow.chars().allMatch(character -> character == '.')) {
                 rowsToExpand.add(row);
             }
@@ -85,16 +48,14 @@ public class Main {
         return rowsToExpand;
     }
 
-    private static List<Long> getColumnsToExpand() {
+    private static List<Integer> getColumnsToExpand() {
+        char[][] galaxies = convertGalaxyInputTo2DArray();
 
-        char[][] galaxies = getGalaxyArray();
-
-        List<Long> columnsToExpand = new ArrayList<>();
-        for (long column = 0; column < galaxies[0].length; column++) {
+        List<Integer> columnsToExpand = new ArrayList<>();
+        for (int column = 0; column < galaxies[0].length; column++) {
             boolean foundGalaxy = false;
             for (int row = 0; row < galaxies.length; row++) {
-                int elemColumn = Math.toIntExact(column);
-                char currentColumn = galaxies[row][elemColumn];
+                char currentColumn = galaxies[row][column];
                 if (currentColumn == '#') {
                     foundGalaxy = true;
                     break;
@@ -107,22 +68,52 @@ public class Main {
         return columnsToExpand;
     }
 
-    private static char[][] getGalaxyArray() {
+    private static void determineGalaxyCoordinates() {
+        char[][] galaxies = convertGalaxyInputTo2DArray();
+        int galaxyId = 1;
+        for (int row = 0; row < galaxies.length; row++) {
+            for (int column = 0; column < galaxies[row].length; column++) {
+                char currentCharacter = galaxies[row][column];
+                if (currentCharacter == '#') {
+                    galaxyCoordinates.put(galaxyId, new Coordinates(row, column));
+                    galaxyId++;
+                }
+            }
+        }
+    }
+
+    private static char[][] convertGalaxyInputTo2DArray() {
         char[][] galaxies = new char[input.size()][];
-        int i = 0;
-        for (String row : input) {
+        for (int i = 0; i < input.size(); i++) {
             galaxies[i] = input.get(i).toCharArray();
-            i++;
         }
         return galaxies;
     }
 
-    private static long getNrToAdd(long first, long second, List<Long> toAdd, long timesToExpand) {
-        long total = 0;
-        long start = Math.min(first, second);
-        long end = Math.max(first, second);
+    private static long calculateDistance(List<Integer> rowsToExpand, List<Integer> columnsToExpand, int timesToExpand) {
+        long sum = 0;
+        for (int i = 1; i < galaxyCoordinates.size(); i++) {
+            for (int j = i + 1; j <= galaxyCoordinates.size(); j++) {
+                Coordinates firstCoordinates = galaxyCoordinates.get(i);
+                Coordinates secondCoordinates = galaxyCoordinates.get(j);
+                int rowDifference = firstCoordinates.row() - secondCoordinates.row();
+                int columnDifference = firstCoordinates.column() - secondCoordinates.column();
+                int distance = Math.abs(rowDifference) + Math.abs(columnDifference)
+                        + calculateTimesToExpand(firstCoordinates.row(), secondCoordinates.row(), rowsToExpand, timesToExpand)
+                        + calculateTimesToExpand(firstCoordinates.column(), secondCoordinates.column(), columnsToExpand, timesToExpand);
+                sum += distance;
+            }
+        }
 
-        for (long i = start; i < end; i++) {
+        return sum;
+    }
+
+    private static int calculateTimesToExpand(int first, int second, List<Integer> toAdd, int timesToExpand) {
+        int total = 0;
+        int start = Math.min(first, second);
+        int end = Math.max(first, second);
+
+        for (int i = start; i < end; i++) {
             if (toAdd.contains(i)) {
                 total++;
             }
