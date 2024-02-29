@@ -33,9 +33,11 @@ public class Main {
         List<Long> rowsToExpand = getRowsToExpand();
         List<Long> columnsToExpand = getColumnsToExpand();
         getGalaxyCoordinates();
-        long distance = getDistance(rowsToExpand, columnsToExpand, 1000000);
+        long distancePart1 = getDistance(rowsToExpand, columnsToExpand, 2);
+        long distancePart2 = getDistance(rowsToExpand, columnsToExpand, 1000000);
 
-        System.out.println(distance);
+        System.out.println(distancePart1);
+        System.out.println(distancePart2);
     }
 
     private static long getDistance(List<Long> rowsToExpand, List<Long> columnsToExpand, long timesToExpand) {
