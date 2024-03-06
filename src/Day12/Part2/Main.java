@@ -14,15 +14,15 @@ public class Main {
              BufferedReader reader = new BufferedReader(fileReader)) {
 
             String inputLine;
-            String springs = null;
+            String springRow = null;
             List<Integer> groups = null;
             long permutationsSum = 0;
 
             while ((inputLine = reader.readLine()) != null) {
                 String[] lineSplit = inputLine.split("\\s");
-                springs = unfoldSprings(lineSplit[0], 5);
+                springRow = unfoldSprings(lineSplit[0], 5);
                 groups = unfoldGroups(Arrays.stream(lineSplit[1].split(",")).map(Integer::valueOf).toList(), 5);
-                permutationsSum += Rows.countPermutations(springs, groups);
+                permutationsSum += Row.countPermutations(springRow, groups);
             }
 
             System.out.println(permutationsSum);
@@ -33,13 +33,13 @@ public class Main {
     }
 
     private static String unfoldSprings(String inputSprings, int numOfCopies) {
-        String springs = inputSprings;
+        String springRow = inputSprings;
 
         for (int i = 1; i < numOfCopies; i++){
-            springs = springs.concat("?").concat(inputSprings);
+            springRow = springRow.concat("?").concat(inputSprings);
         }
 
-        return springs;
+        return springRow;
     }
 
     private static List<Integer> unfoldGroups(List<Integer> inputGroups, int numOfCopies) {
