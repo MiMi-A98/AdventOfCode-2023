@@ -15,16 +15,17 @@ public class Main {
             String inputLine;
             String springRow = null;
             List<Integer> groups = null;
-            long count = 0;
+            long arrangementsSum = 0;
 
             while ((inputLine = reader.readLine()) != null) {
                 String[] lineSplit = inputLine.split("\s");
                 springRow = lineSplit[0];
                 groups = Arrays.stream(lineSplit[1].split(",")).map(Integer::valueOf).toList();
-                count += Row.countPermutations(springRow, groups);
+                SpringConditionRecord springRecord = new SpringConditionRecord(springRow, groups);
+                arrangementsSum += springRecord.countArrangements();
             }
 
-            System.out.println(count);
+            System.out.println(arrangementsSum);
 
         } catch (Exception e) {
             e.printStackTrace();
