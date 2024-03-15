@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Notes {
-    private List<String> pattern;
+    private final List<String> pattern;
     private static final List<Integer> verticalMirrors = new ArrayList<>();
     private static final List<Integer> horizontalMirrors = new ArrayList<>();
 
@@ -77,9 +77,7 @@ public class Notes {
     }
 
     public static int calculateMirrorsSum() {
-        int sum = 0;
-        sum = calculateHorizontalMirrorsSum() + calculateVerticalMirrorsSum();
-        return sum;
+        return calculateHorizontalMirrorsSum() + calculateVerticalMirrorsSum();
     }
 
     @Override
